@@ -50,6 +50,7 @@ draw_params = dict(matchColor = (0,0,255),
 
 img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,matches,None,**draw_params)
 
+cv2.imwrite("output/box_match.png",img3)
 
 
 
@@ -63,4 +64,3 @@ try:
 except:
   pass
 
-cv2.imwrite("output/box_match.png",img3)

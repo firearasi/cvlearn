@@ -42,6 +42,8 @@ draw_params = dict(matchColor = (0,255,0),
                    flags = 0)
 
 img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,matches,None,**draw_params)
+cv2.imwrite("output/starbucks_match.png",img3)
+
 
 try:
   cv2.namedWindow("Pic",cv2.WINDOW_NORMAL)
@@ -52,4 +54,3 @@ try:
     cv2.destroyAllWindows()
 except:
   pass
-cv2.imwrite("output/starbucks_match.png",img3)
