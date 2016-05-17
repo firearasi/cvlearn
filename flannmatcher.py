@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt 
 
-  #%%
+#%%
 cv2.ocl.setUseOpenCL(False)
 img1 = cv2.imread('data/box.png')
 img2=cv2.imread('data/box_in_scene.png')
@@ -31,15 +31,23 @@ matcher=cv2.FlannBasedMatcher(flann_params,{})
 matches=matcher.knnMatch(des1,des2,k=2)
 
 #Need to draw only good matches, so create a mask
-matchesMask = [[0,0] for i in range(len(matches))]
+
 
 # ratio test as per Lowe's paper
-num_good_matches = 0
-for i,(m,n) in enumerate(matches):
-    if m.distance < 0.58*n.distance:
-        matchesMask[i]=[1,0]
-        num_good_matches += 1
 
+def good_matches(matches,ratio=0.75):
+  good_indices=[int(m.distance < ratio * n.distance) for (m,n) in matches]
+  n=sum(good_indices)
+  good_mask=[[i,0] for i in good_indices]
+  return (n,good_mask)
+
+r=0.75  
+num_good_matches,matchesMask = good_matches(matches,ratio=r)
+while num_good_matches>10:
+    r -= 0.01
+    num_good_matches,matchesMask = good_matches(matches,ratio=r)
+
+print("Lowe ratio:",r)
 print("Num of good matches:",num_good_matches)
 
 
