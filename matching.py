@@ -28,7 +28,8 @@ def	get_args(pic_names_required = True):
 																		choices=['bf','flann'],default='bf',
 																		help="keypoint matcher")
 	parser.add_argument("-f","--feature-type",	dest="feature_type",
-																		choices=['sift','surf','orb','akaze'] , default='akaze',
+																		choices=['sift','surf','orb','akaze'] , 
+                                    default='akaze',
 																		help="Feature	extractor	that	will	be	used;	can	be	either	'sift'	or	'surf'")
 	
 	return	parser.parse_args()
@@ -47,10 +48,10 @@ def	draw_lines(img_left,	img_right,	lines,	pts_left,	pts_right):
 def	get_descriptors(gray_image,	feature_type):	
 	if	feature_type	==	'surf':
 		feature_extractor	=	cv2.xfeatures2d.SURF_create()
-	elif	feature_type	==	'sift':
+	elif feature_type	==	'sift':
 		feature_extractor	=	cv2.xfeatures2d.SIFT_create()
 	elif feature_type == 'orb':
-		feature_extactor = cv2.ORB_create()
+		feature_extractor = cv2.ORB_create()
 	elif feature_type == 'akaze':
 		feature_extractor = cv2.AKAZE_create()
 	else:
