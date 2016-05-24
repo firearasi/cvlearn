@@ -1,77 +1,46 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 17 08:54:50 2016
-
-@author: firearasi
-"""
-#%%
-import cv2
-import cv2.xfeatures2d
-import numpy as np
-import matplotlib.pyplot as plt 
-
-#%%
-cv2.ocl.setUseOpenCL(False)
-img1 = cv2.imread('data/left.jpg')
-img2=cv2.imread('data/right.jpg')
-
-# Initiate feature detector
-fd=cv2.ORB_create()
-#fd = cv2.AKAZE_create()
-#fd=cv2.xfeatures2d.SURF_create()
-
-kp1,des1=fd.detectAndCompute(img1,None)
-kp2,des2=fd.detectAndCompute(img2,None)
-
-
-FLANN_INDEX_LSH    = 6
-flann_params= dict(algorithm = FLANN_INDEX_LSH,
-                   table_number = 6, # 12
-                   key_size = 12,     # 20
-                   multi_probe_level = 1) #2
-matcher=cv2.FlannBasedMatcher(flann_params,{}) 
-
-matches=matcher.knnMatch(des1,des2,k=2)
-
-#Need to draw only good matches, so create a mask
-
-
-# ratio test as per Lowe's paper
-
-def good_matches(matches,ratio=0.75):
-  good_indices=[int(m.distance < ratio * n.distance) for (m,n) in matches]
-  n=sum(good_indices)
-  good_mask=[[i,0] for i in good_indices]
-  return (n,good_mask)
-
-r=0.75  
-num_good_matches,matchesMask = good_matches(matches,ratio=r)
-while num_good_matches>15:
-    r -= 0.01
-    num_good_matches,matchesMask = good_matches(matches,ratio=r)
-
-print("Lowe ratio:",r)
-print("Num of good matches:",num_good_matches)
-
-
-draw_params = dict(matchColor = (0,0,255),
-                   singlePointColor = (255,0,0),
-                   matchesMask = matchesMask,
-                   flags = 2)
-
-img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,matches,None,**draw_params)
-
-cv2.imwrite("output/indian_match.png",img3)
+from matching import *
+if __name__=='__main__':
+		args=build_arg_parser().parse_args()
+		img_left=cv2.imread(args.img_left,0)
+		img_right=cv2.imread(args.img_right,0)
+		feature_type=args.feature_type
+		matcher_type=args.matcher_type
+		print('feature type:',feature_type)
+		print('matcher_type:',matcher_type)
+		scaling_factor = 1.0
+		img_left=cv2.resize(img_left, None,fx=scaling_factor,
+																	fy=scaling_factor,
+																	interpolation=cv2.INTER_AREA)
+		img_right=cv2.resize(img_right, None,fx=scaling_factor,
+																	fy=scaling_factor,
+																	interpolation=cv2.INTER_AREA)
+		kps_left,des_left=get_descriptors(img_left,feature_type)
+		kps_right,des_right=get_descriptors(img_right,feature_type)
+		
+		matches=getMatches(des_left,des_right,matcher_type)
+		
+		
+		
+					
+        
 
 
 
-try:
-  cv2.namedWindow("Pic",cv2.WINDOW_NORMAL)
-  cv2.imshow("Pic",img3)
-  cv2.resizeWindow("Pic",1920,1080)
 
-  if cv2.waitKey(0)  ==ord('q'):
-    cv2.destroyAllWindows()
-except:
-  pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

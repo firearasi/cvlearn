@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 #%%
 cv2.ocl.setUseOpenCL(False)
+
 img1 = cv2.imread('data/box.png')
 img2=cv2.imread('data/box_in_scene.png')
 
