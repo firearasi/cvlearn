@@ -21,9 +21,9 @@ matcher_type=args.matcher_type
 kps_left,des_left=get_descriptors(img_left,feature_type)
 kps_right,des_right=get_descriptors(img_right,feature_type)
 
-matches=get_matches(des_left,des_right,matcher_type)
+matches=get_matches(des_left,des_right,matcher_type,feature_type)
 
-n,matchesMask=get_n_good_matches_mask(matches,20)
+n,matchesMask=get_n_good_matches_mask(matches,30)
 print("Showing %d good matches."%n)
 
 draw_params = dict(matchColor = (0,0,255),

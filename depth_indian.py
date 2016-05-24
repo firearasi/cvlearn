@@ -17,7 +17,7 @@ if __name__=='__main__':
 		kps_left,des_left=get_descriptors(img_left,feature_type)
 		kps_right,des_right=get_descriptors(img_right,feature_type)
 		
-		matches=get_matches(des_left,des_right,matcher_type)
+		matches=get_matches(des_left,des_right,matcher_type,feature_type)
 		
 		
 		

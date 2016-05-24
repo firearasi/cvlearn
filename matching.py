@@ -28,7 +28,7 @@ def	get_args(pic_names_required = True):
 																		choices=['bf','flann'],default='bf',
 																		help="keypoint matcher")
 	parser.add_argument("-f","--feature-type",	dest="feature_type",
-																		choices=['sift','surf','orb','akaze'] , 
+																		choices=['sift','surf','orb','akaze','brisk'] , 
                                     default='akaze',
 																		help="Feature	extractor	that	will	be	used;	can	be	either	'sift'	or	'surf'")
 	
@@ -45,34 +45,42 @@ def	draw_lines(img_left,	img_right,	lines,	pts_left,	pts_right):
 		cv2.circle(img_right,	tuple(pt_right),	5,	color,	-1)
 	return	img_left,	img_right
 
-def	get_descriptors(gray_image,	feature_type):	
+def	get_descriptors(gray_image,	feature_type,**args):	
 	if	feature_type	==	'surf':
 		feature_extractor	=	cv2.xfeatures2d.SURF_create()
 	elif feature_type	==	'sift':
 		feature_extractor	=	cv2.xfeatures2d.SIFT_create()
 	elif feature_type == 'orb':
-		feature_extractor = cv2.ORB_create()
+		feature_extractor = cv2.ORB_create(**args)
 	elif feature_type == 'akaze':
 		feature_extractor = cv2.AKAZE_create()
+	elif feature_type=='brisk':
+		feature_extractor=cv2.BRISK_create()
 	else:
-		raise TypeError("The type of detector shoud be surf or sift!")
+		raise TypeError("Wrong keypoint detector type!")
 	return feature_extractor.detectAndCompute(gray_image,None)
 	
-def get_matches(des_left,des_right,matcher_type):
+def get_matches(des_left,des_right,matcher_type,feature_type):
+		if feature_type in ['orb','akaze','brisk']:
+			norm_type=cv2.NORM_HAMMING
+		else:
+			norm_type=cv2.NORM_L2
+
 		if matcher_type == 'bf':
-			matcher=cv2.BFMatcher(cv2.NORM_HAMMING,crossCheck=False)
+			matcher=cv2.BFMatcher(norm_type,crossCheck=False)
 		elif matcher_type == 'flann':
-				#	FLANN	parameters
-				FLANN_INDEX_KDTREE	=	0
-				index_params	=	dict(algorithm	=	FLANN_INDEX_KDTREE,	trees	=	5)
-				search_params	=	dict(checks=50)
-				#	Get	the	matches	based	on	the	descriptors
-				matcher	=	cv2.FlannBasedMatcher(index_params,	search_params)
+			FLANN_INDEX_LSH    = 6
+			flann_params= dict(algorithm = FLANN_INDEX_LSH,
+				table_number = 6, # 12
+				key_size = 12,     # 20
+				multi_probe_level = 1) #2
+			matcher=cv2.FlannBasedMatcher(flann_params,{}) 
+
 		else:
 			raise TypeError('Wrong matcher type.')
 		matches = matcher.knnMatch(des_left,des_right, k=2)
 		return matches
-def good_matches(matches,ratio=0.75):
+def good_matches(matches,ratio=0.85):
   good_indices=[int(m.distance < ratio * n.distance) for (m,n) in matches]
   n=sum(good_indices)
   good_mask=[[i,0] for i in good_indices]
