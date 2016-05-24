@@ -1,6 +1,6 @@
 from matching import *
 if __name__=='__main__':
-		args=build_arg_parser().parse_args()
+		args=get_args()
 		img_left=cv2.imread(args.img_left,0)
 		img_right=cv2.imread(args.img_right,0)
 		feature_type=args.feature_type
@@ -17,7 +17,7 @@ if __name__=='__main__':
 		kps_left,des_left=get_descriptors(img_left,feature_type)
 		kps_right,des_right=get_descriptors(img_right,feature_type)
 		
-		matches=getMatches(des_left,des_right,matcher_type)
+		matches=get_matches(des_left,des_right,matcher_type)
 		
 		
 		

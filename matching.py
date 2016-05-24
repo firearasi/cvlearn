@@ -14,22 +14,24 @@ import matplotlib.pyplot as plt
 cv2.ocl.setUseOpenCL(False)
 
 import	argparse
-def	build_arg_parser():
+def	get_args(pic_names_required = True):
 	parser	=	argparse.ArgumentParser(description='Find	fundamental	matrix	\
 									using	the	two	input	stereo	images	and	draw	epipolar	lines')
-	parser.add_argument("-l","--img-left",	dest="img_left",	required=True,
-									help="Image	captured	from	the	left	view")
-	parser.add_argument("-r","--img-right",	dest="img_right",	required=True,
-									help="Image	captured	from	the	right	view")
+	parser.add_argument("-l","--img-left",	dest="img_left",	
+																		required=pic_names_required,
+																		help="Image	captured	from	the	left	view")
+	parser.add_argument("-r","--img-right",	dest="img_right",	
+																		required=pic_names_required,
+																		help="Image	captured	from	the	right	view")
 									
 	parser.add_argument("-m","--matcher_type",
-																	choices=['bf','flann'],default='bf',
-																	help="keypoint matcher")
-	parser.add_argument("-t","--feature-type",	dest="feature_type",
-									choices=['sift','surf','orb','akaze'] , default='akaze',
-									help="Feature	extractor	that	will	be	used;	can	be	either	'sift'	or	'surf'")
+																		choices=['bf','flann'],default='bf',
+																		help="keypoint matcher")
+	parser.add_argument("-f","--feature-type",	dest="feature_type",
+																		choices=['sift','surf','orb','akaze'] , default='akaze',
+																		help="Feature	extractor	that	will	be	used;	can	be	either	'sift'	or	'surf'")
 	
-	return	parser
+	return	parser.parse_args()
 def	draw_lines(img_left,	img_right,	lines,	pts_left,	pts_right):				
 	h,w	=	img_left.shapeimg_left	=	cv2.cvtColor(img_left,	cv2.COLOR_GRAY2BGR)
 	img_right	=	cv2.cvtColor(img_right,	cv2.COLOR_GRAY2BGR)
@@ -55,7 +57,7 @@ def	get_descriptors(gray_image,	feature_type):
 		raise TypeError("The type of detector shoud be surf or sift!")
 	return feature_extractor.detectAndCompute(gray_image,None)
 	
-def getMatches(des_left,des_right,matcher_type):
+def get_matches(des_left,des_right,matcher_type):
 		if matcher_type == 'bf':
 			matcher=cv2.BFMatcher(cv2.NORM_HAMMING,crossCheck=False)
 		elif matcher_type == 'flann':
