@@ -24,7 +24,7 @@ kps_right,des_right=get_descriptors(img_right,feature_type)
 matches=get_matches(des_left,des_right,matcher_type)
 
 n,matchesMask=get_n_good_matches_mask(matches,20)
-
+print("Showing %d good matches."%n)
 
 draw_params = dict(matchColor = (0,0,255),
                    singlePointColor = (255,0,0),
@@ -41,7 +41,7 @@ cv2.imwrite("output/indian_cheng.png",img)
 
 try:
   cv2.namedWindow("Pic",cv2.WINDOW_NORMAL)
-  cv2.imshow("Pic",img3)
+  cv2.imshow("Pic",img)
   cv2.resizeWindow("Pic",1920,1080)
 
   if cv2.waitKey(0)  ==ord('q'):
